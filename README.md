@@ -99,9 +99,9 @@ kubectl scale deployment nginx-deployment --replicas 3 # scale DOWN to 3 replica
 
 #### 3 only objects are needed to make storage work:
 
--   Storage Class (SC) - defines different types of storage (e.g SSD, HDD etc)
--   Persistent Volume (PV)
--   Persistent Volume Claim (PVC)
+-   Storage Class (SC) - First: defines different types of storage (e.g SSD, HDD etc)
+-   Persistent Volume Claim (PVC) - Second: creates a claim to a specific storage class
+-   Persistent Volume (PV) - Third: it will be created automatically when a PVC is created
 
 ```bash
 kubectl get sc # list all storage classes
@@ -112,7 +112,7 @@ kubectl describe pvc | grep "Used By" <pod_name> # check which pod is using the 
 kubectl get pvc -n datacamp # check pvc in a specific namespace
 ```
 
-`Storage Class example`
+`Storage Class example:`
 
 ```yaml
 apiVersion: storage.k8s.io/v1
@@ -123,7 +123,7 @@ provisioner: kubernetes.io/no-provisioner
 reclaimPolicy: Delete
 ```
 
-`PersistentVolume example`
+`PersistentVolume example:`
 
 ```yaml
 apiVersion: v1
@@ -140,7 +140,7 @@ spec:
         path: /data/s3_data
 ```
 
-`PersistentVolumeClaim example`
+`PersistentVolumeClaim example:`
 
 ```yaml
 apiVersion: v1
@@ -156,7 +156,7 @@ spec:
     storageClassName: standard
 ```
 
-`Pod Usage example`
+`Pod Usage example:`
 
 ```yaml
 apiVersion: v1
@@ -175,3 +175,5 @@ spec:
           persistentVolumeClaim:
               claimName: my-pvc
 ```
+
+### 3.4 Networking and Load Balancing
