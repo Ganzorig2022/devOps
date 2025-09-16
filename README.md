@@ -177,3 +177,23 @@ spec:
 ```
 
 ### 3.4 Networking and Load Balancing
+> Load balancers distribute incoming network load over Pods evenly.
+> Ingress objects are used to route HTTP and HTTPS requests (traffic) from outside the cluster to services in the cluster.
+> Ingress rules define which requests are served by which service.
+> Typically, used in combination with load balancing.
+
+`Creating a Service`
+
+1. Declare the Pods to be attached to your Service. Don't forget to define appropiriate labels to be attached to the Pods.
+2. Deploy the Pods.
+3. Declare the Service, specifying the selector to match the labels of the Pods.
+4. Deploy the Service.
+
+```bash
+cat *.yml
+kubectl apply -f 01_pods.yml -f 02.service.yml
+kubectl describe service <service_name> # get detailed information about a service
+kubectl get deployments # get all deployments
+kubectl scale deployment <deployment_name> --replicas 5 # scale up to 5 replicas
+kubectl describe service <service_name> # check the endpoints of the service (should be 5)
+```
