@@ -61,6 +61,7 @@ kubectl get <object>: overview about objects deployed on Kubernetes
 kubectl get pods
 kubectl get nodes
 kubectl get services
+kubectl get namespace
 kubectl describe <object>: detailed information about an object
 ```
 
@@ -106,6 +107,9 @@ kubectl scale deployment nginx-deployment --replicas 3 # scale DOWN to 3 replica
 kubectl get sc # list all storage classes
 kubectl get pv # list all persistent volumes
 kubectl get pvc # list all persistent volumes claims
+kubectl apply -f 01_pods.yml -f 02_pvc.yml # create pods and pvc
+kubectl describe pvc | grep "Used By" <pod_name> # check which pod is using the PVC
+kubectl get pvc -n datacamp # check pvc in a specific namespace
 ```
 
 `Storage Class example`
