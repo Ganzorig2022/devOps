@@ -289,8 +289,12 @@ labels:
 
 `Here is the scenario:`
 
-`1.` Client sends request to `NodeIP:NodePort` (externally, e.g from web browser, etc)
+`1.` Client sends request to `NodeIP:NodePort` (externally, e.g from web browser, etc) - NodePort, typically 30000–32767
 
-`2.` Node forwards the request to `ClusterIP:ServicePort` (iternally)
+`2.` Node forwards the request to `ClusterIP:ServicePort` (internally. spec.ports.port)
 
-`3.` Service forwards the request to `PodIP:targetPort` (internally)
+`3.` Service forwards the request to `PodIP:targetPort` (internally. spec.ports.targetPort)
+
+`4.` Pod receives the request on `containerPort` (internally. spec.containers[].ports.containerPort)
+
+ 
