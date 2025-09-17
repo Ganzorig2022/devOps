@@ -256,6 +256,38 @@ kubectl get all --namespace <namespace_name> # get all objects in a specific nam
 
 `Different types of Services`
 
--   ClusterIP - default
--   NodePort
+-   ClusterIP - default (e.g Pod to Pod communication)
+-   NodePort - exposes the service on each Node's IP at a static port (e.g external access to a service)
 -   Load Balancer
+
+> Pods are mortal, Services are immortal. Pods are identified via selectors ("selector")
+> Each pod has a Service, but a Service can have multiple Pods.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+    name: <service_name>
+spec:
+    selector:
+        app: <pod_label>
+```
+
+```yaml
+labels:
+    app: <pod_label>
+```
+
+`Service Endpoints`
+
+> K8s creates Endpoint object
+> Same name as the Service
+> Keeps track of the which Pods are members/endpoints of the Service
+
+> Service port is different from Pod port
+> targetPort must match containerPort where the pod is listening and the service is forwarding the traffic to
+
+Here is the scenario:
+`1.` Client sends request to `NodeIP:NodePort` (externally, e.g from web browser, etc)
+`2.` Node forwards the request to `ClusterIP:ServicePort` (iternally)
+`3.` Service forwards the request to `PodIP:targetPort` (internally)
