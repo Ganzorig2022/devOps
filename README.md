@@ -287,7 +287,8 @@ labels:
 > Service port is different from Pod port
 > targetPort must match containerPort where the pod is listening and the service is forwarding the traffic to
 
-Here is the scenario:
+`Here is the scenario:`
+
 `1.` Client sends request to `NodeIP:NodePort` (externally, e.g from web browser, etc)
 `2.` Node forwards the request to `ClusterIP:ServicePort` (iternally)
 `3.` Service forwards the request to `PodIP:targetPort` (internally)
