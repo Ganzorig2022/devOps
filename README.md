@@ -42,28 +42,24 @@ docker build <context>
 
 # 3. Kubernetes. Container orchestration with Kubernetes (K8s)
 
+> Each config file has 3 main parts:
+
+1. **metadata** - name, labels, etc
+2. **spec** - specification of the desired state of the object
+3. **status** - automatically filled by k8s, current state of the object
+
 ### 3.1 Stateless vs Stateful applications
 
 > Stateless applications do not save client data generated in one session for use in the next session with that client. e.g deployments, services, etc.
 > Stateful applications save client data from one session for use in the next session with that client. e.g databases, etc. Each time a POD is terminated, a new POD is created and needs to pick up the saved state.
+
+### Kubernetes Architecture
 
 Kubernetes interacts with Docker to schedule and maintain containers.
 
 -   Pods - smallest, deployable unit
 -   Nodes - smallest hardware unit. Nodes have pods. Is a group of one or more pods.
 -   Control Plane - AKA brain of a Kubernetes cluster, manages nodes and pods.
-
-```bash
-kubectl version # check the client version
-kubectl create -f <manifest.yaml> # create new objects, with -f for "filename"
-kubectl apply -f <file_name>.yml # Applying configuration. Create deployment if it doesn't exist, update it if it does.
-kubectl get <object>: overview about objects deployed on Kubernetes
-kubectl get pods
-kubectl get nodes
-kubectl get services
-kubectl get namespace
-kubectl describe <object>: detailed information about an object
-```
 
 Architecture
 From Larger to Smaller:
@@ -79,6 +75,18 @@ Cheat Sheet:
 -   Kubernetes **Nodes**: AKA “worker machines”, running Linux and container engine
 -   Kubernetes **Pods**: set of one or more containers, smallest deployable unit
 -   Kubernetes **Services**: a resource for exposing network connectivity, required to connect to Pods from outside, and for communication between Pods
+
+```bash
+kubectl version # check the client version
+kubectl create -f <manifest.yaml> # create new objects, with -f for "filename"
+kubectl apply -f <file_name>.yml # Applying configuration. Create deployment if it doesn't exist, update it if it does.
+kubectl get <object>: overview about objects deployed on Kubernetes
+kubectl get pods
+kubectl get nodes
+kubectl get services
+kubectl get namespace
+kubectl describe <object>: detailed information about an object
+```
 
 ### 3.2 Scaling
 
@@ -177,6 +185,7 @@ spec:
 ```
 
 ### 3.4 Networking and Load Balancing
+
 > Load balancers distribute incoming network load over Pods evenly.
 > Ingress objects are used to route HTTP and HTTPS requests (traffic) from outside the cluster to services in the cluster.
 > Ingress rules define which requests are served by which service.
@@ -196,4 +205,41 @@ kubectl describe service <service_name> # get detailed information about a servi
 kubectl get deployments # get all deployments
 kubectl scale deployment <deployment_name> --replicas 5 # scale up to 5 replicas
 kubectl describe service <service_name> # check the endpoints of the service (should be 5)
+```
+
+#### Creating Application
+
+> Configure → Deploy → Expose
+> Configure (secret, config)
+
+`1.`. Create a secret file yaml
+`2.`. Create a configmap file yaml (ConfigMaps hold non-sensitive config (e.g., env vars, config files) for injection into pods.)
+`3.`. Create a deployment file yaml
+`4.`. Create a service file yaml (nodePort, clusterIp, loadBalancer (traefik))
+`5.`. Create an ingress file yaml
+
+```bash
+
+```
+
+### 3.5 Namespaces
+> Namespaces > Secret > ConfigMap > Deployment > Service > Ingress
+> Organize resources (clusters) in namespaces (like folders on a computer)
+> Each namespaces must have its own set of resources (pods, services, deployments, configmaps, secrets, etc)
+
+`1.` Default - for objects with no namespace
+`2.` kube-system - for objects created by the system
+`3`. kube-public - for objects that should be visible and readable by all users (including those not authenticated). This namespace is mostly reserved for cluster usage, in case that some resources should be visible and readable publicly throughout the whole cluster.
+
+##### Access service in another namespace?
+
+- <service_name>.<namespace> (e.g customer-service.card-system)
+
+```bash
+kubectl get namespaces # list all namespaces
+kubectl apply -f <file_name>.yml --namespace <namespace_name> # create objects in a specific namespace
+kubectl get pods --namespace <namespace_name> # list all pods in a specific namespace
+kubectl create namespace <namespace_name> # or create a new namespance
+kubectl config set-contect --current --namespace=<namespace_name> # change the active namespace
+kubectl get all --namespace <namespace_name> # get all objects in a specific namespace
 ```
