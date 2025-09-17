@@ -247,15 +247,15 @@ kubectl get all --namespace <namespace_name> # get all objects in a specific nam
 
 ### 3.6 Service
 
--   Why we need a Service?
+`Why we need a Service?`
 
-*   Stable IP address and DNS to access a set of Pods
-*   Load balancing
-*   Loose coupling
-*   Within & outside the cluster
+-   Stable IP address and DNS to access a set of Pods
+-   Load balancing
+-   Loose coupling
+-   Within & outside the cluster
 
--   Different types of Services
+`Different types of Services`
 
-*   ClusterIP - default
-*   NodePort
-*   Load Balancer
+-   ClusterIP - default
+-   NodePort
+-   Load Balancer
