@@ -223,6 +223,7 @@ kubectl describe service <service_name> # check the endpoints of the service (sh
 ```
 
 ### 3.5 Namespaces
+
 > Namespaces > Secret > ConfigMap > Deployment > Service > Ingress
 > Organize resources (clusters) in namespaces (like folders on a computer)
 > Each namespaces must have its own set of resources (pods, services, deployments, configmaps, secrets, etc)
@@ -233,7 +234,7 @@ kubectl describe service <service_name> # check the endpoints of the service (sh
 
 ##### Access service in another namespace?
 
-- <service_name>.<namespace> (e.g customer-service.card-system)
+-   <service_name>.<namespace> (e.g customer-service.card-system)
 
 ```bash
 kubectl get namespaces # list all namespaces
@@ -243,3 +244,18 @@ kubectl create namespace <namespace_name> # or create a new namespance
 kubectl config set-contect --current --namespace=<namespace_name> # change the active namespace
 kubectl get all --namespace <namespace_name> # get all objects in a specific namespace
 ```
+
+### 3.6 Service
+
+-   Why we need a Service?
+
+*   Stable IP address and DNS to access a set of Pods
+*   Load balancing
+*   Loose coupling
+*   Within & outside the cluster
+
+-   Different types of Services
+
+*   ClusterIP - default
+*   NodePort
+*   Load Balancer
