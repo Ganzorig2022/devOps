@@ -391,13 +391,15 @@ kubectl --namespace qpay-sms rollout restart deployment qpay-sms-admin-service
 
 #### Visualizing RBAC
 
-`Analogy: Imagine a building (Kubernetes cluster):
+`Analogy: Imagine a building (Kubernetes cluster):`
 
-Rooms: Namespaces (e.g., my-app).
-Role: A key for one room, allowing specific actions (e.g., “view pods”).
-ClusterRole: A master key for all rooms.
-RoleBinding: Giving the room key to a person (ServiceAccount or user).
-ClusterRoleBinding: Giving the master key to an admin.`
+```text
+- Rooms: Namespaces (e.g., my-app).
+- Role: A key for one room, allowing specific actions (e.g., “view pods”).
+- ClusterRole: A master key for all rooms.
+- RoleBinding: Giving the room key to a person (ServiceAccount or user).
+- ClusterRoleBinding: Giving the master key to an admin.
+```
 
 `1.` Role
 
