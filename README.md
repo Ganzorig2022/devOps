@@ -359,9 +359,9 @@ spec:
                 - name: qpay-sms-admin-service
                   image: git.qpay.mn:5005/merchant/sms-admin-service:dev # Private image
                   ports:
-                    - name: server-port
-                      containerPort: 3000
-                      protocol: TCP
+                      - name: server-port
+                        containerPort: 3000
+                        protocol: TCP
                   imagePullPolicy: Always
             restartPolicy: Always
             imagePullSecrets:
@@ -384,3 +384,43 @@ cd /app/repos/sms-admin-service && docker build --network=host --add-host=git.qp
 docker push git.qpay.mn:5005/merchant/sms-admin-service:dev
 kubectl --namespace qpay-sms rollout restart deployment qpay-sms-admin-service
 ```
+
+### 3.8 Securing cluster with RBAC (Role-Based Access Control)
+
+> Link ServiceAccount to Role or ClusterRole via RoleBinding or ClusterRoleBinding (order matters!!!)
+
+#### Visualizing RBAC
+
+`Analogy: Imagine a building (Kubernetes cluster):
+
+Rooms: Namespaces (e.g., my-app).
+Role: A key for one room, allowing specific actions (e.g., “view pods”).
+ClusterRole: A master key for all rooms.
+RoleBinding: Giving the room key to a person (ServiceAccount or user).
+ClusterRoleBinding: Giving the master key to an admin.`
+
+`1.` Role
+
+> With Role, you can define namespaced permissions. (entire namespace, typically for developers)
+> Bound to (be certain) a specific namespace.
+> What resources in that namespace you can access and what actions you can perform on those resources.
+
+`Role configuration example:`
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+    namespace: dev
+    name: pod-reader
+rules:
+    - apiGroups: [''] # '' indicates the core API group
+      resources: ['pods'] # specify the resource you want to access (e.g pods, services, deployments, etc)
+      verbs: ['get', 'watch', 'list'] # specify the actions you can perform on the resource (e.g get, watch, list, create, update, delete)
+      resourceNames: ['pod_name'] # optional: specify the names of the resources you want to access
+```
+
+`2.` ClusterRole
+
+> With ClusterRole, you can define cluster-wide permissions. (entire cluster, typically for admins)
+> Not bound to a specific namespace.
