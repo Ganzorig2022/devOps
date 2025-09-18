@@ -335,3 +335,133 @@ spec:
 status:
     loadBalancer: {}
 ```
+### 3.7 Deploying images in K8s from private Docker repository
+
+> (Namespace > Secret > ConfigMap > Deployment > Service > Ingress)
+> A Docker repository is where container images are stored, like Docker Hub (public or private)
+
+`Types of Docker repositories:`
+
+-   DockerHub - public and private repos
+-   AWS ECR - private repos
+-   GCR - private repos (Google Cloud)
+-   Self-hosted registry - private repos
+
+`1. Creating docker registry file yaml:`
+
+```yaml
+kind: Secret
+apiVersion: v1
+metadata:
+    name: registrypullsecret
+    namespace: general
+    uid: e7c906fc-17c2-4a84-b963-2be400b618af
+    resourceVersion: '1561411'
+    creationTimestamp: '2025-03-13T09:35:36Z'
+    managedFields:
+        - manager: dashboard
+          operation: Update
+          apiVersion: v1
+          time: '2025-03-13T09:35:36Z'
+          fieldsType: FieldsV1
+          fieldsV1:
+              f:data:
+                  .: {}
+                  f:.dockerconfigjson: {}
+              f:type: {}
+data:
+    .dockerconfigjson: >-
+        eyJhdXRocyI6eyJodHRwczovL2dpdC5xcGF5Lm1uOjUwMDUiOnsidXNlcm5hbWUiOiJnb21ib2RvcmoiLCJwYXNzd29yZCI6IjVGWU5XNDNacU5tRkxBRFUyWmpfIiwiYXV0aCI6IloyOXRZbTlrYjNKcU9qVkdXVTVYTkROYWNVNXRSa3hCUkZVeVdtcGYifX19
+type: kubernetes.io/dockerconfigjson
+```
+
+`2. Create Deployment with Private Image using the secret:`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: qpay-sms-admin-service
+    namespace: qpay-sms
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: qpay-sms-admin-service
+    template:
+        metadata:
+            labels:
+                app: qpay-sms-admin-service
+        spec:
+            containers:
+                - name: qpay-sms-admin-service
+                  image: git.qpay.mn:5005/merchant/sms-admin-service:dev # Private image
+                  ports:
+                      - name: server-port
+                        containerPort: 3000
+                        protocol: TCP
+                  imagePullPolicy: Always
+            restartPolicy: Always
+            imagePullSecrets:
+                - name: registrypullsecret # References the Secret
+```
+
+<!-- All commands -->
+
+```bash
+kubectl apply -f namespace.yaml
+kubectl apply -f registrypullsecret.yaml
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl apply -f ingress.yaml  # Optional
+```
+
+```bash
+cd /app/repos/sms-admin-service && git rev-parse --abbrev-ref HEAD && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD) && git pull
+cd /app/repos/sms-admin-service && docker build --network=host --add-host=git.qpay.mn:192.168.100.47 -t git.qpay.mn:5005/merchant/sms-admin-service:dev -f deployment/Dockerfile .
+docker push git.qpay.mn:5005/merchant/sms-admin-service:dev
+kubectl --namespace qpay-sms rollout restart deployment qpay-sms-admin-service
+```
+
+### 3.8 Securing cluster with RBAC (Role-Based Access Control)
+
+> Link ServiceAccount to Role or ClusterRole via RoleBinding or ClusterRoleBinding (order matters!!!)
+> For RBAC, a ServiceAccount acts like a bridge between resources (e.g Pod) and a Role or ClusterRole.
+
+#### Visualizing RBAC
+
+`Analogy: Imagine a building (Kubernetes cluster):`
+
+```text
+- Rooms: Namespaces (e.g., my-app).
+- Role: A key for one room, allowing specific actions (e.g., “view pods”).
+- ClusterRole: A master key for all rooms.
+- RoleBinding: Giving the room key to a person (ServiceAccount or user).
+- ClusterRoleBinding: Giving the master key to an admin.
+```
+
+`1.` Role
+
+> With Role, you can define namespaced permissions. (entire namespace, typically for developers)
+> Bound to (be certain) a specific namespace.
+> What resources in that namespace you can access and what actions you can perform on those resources.
+
+`Role configuration example:`
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+    namespace: dev
+    name: pod-reader
+rules:
+    - apiGroups: [''] # '' indicates the core API group
+      resources: ['pods'] # specify the resource you want to access (e.g pods, services, deployments, etc)
+      verbs: ['get', 'watch', 'list'] # specify the actions you can perform on the resource (e.g get, watch, list, create, update, delete)
+      resourceNames: ['pod_name'] # optional: specify the names of the resources you want to access
+```
+
+`2.` ClusterRole
+
+> With ClusterRole, you can define cluster-wide permissions. (entire cluster, typically for admins)
+> Not bound to a specific namespace.
