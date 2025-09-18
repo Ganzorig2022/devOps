@@ -80,11 +80,14 @@ Cheat Sheet:
 kubectl version # check the client version
 kubectl create -f <manifest.yaml> # create new objects, with -f for "filename"
 kubectl apply -f <file_name>.yml # Applying configuration. Create deployment if it doesn't exist, update it if it does.
+kubectl delete -f <file_name>.yml # delete objects defined in a file
 kubectl get <object>: overview about objects deployed on Kubernetes
 kubectl get pods
-kubectl get nodes
-kubectl get services
-kubectl get namespace
+kubectl get nodes # kubectl get no
+kubectl get services # kubectl get svc
+kubectl get namespace # kubectl get ns
+kubectl get ingress -n <namespace_name> # get ingress in a specific namespace
+kubectl get all -n <namespace_name> # get all objects in a specific namespace
 kubectl describe <object>: detailed information about an object
 ```
 
@@ -216,7 +219,7 @@ kubectl describe service <service_name> # check the endpoints of the service (sh
 `2.`. Create a configmap file yaml (ConfigMaps hold non-sensitive config (e.g., env vars, config files) for injection into pods.)
 `3.`. Create a deployment file yaml
 `4.`. Create a service file yaml (nodePort, clusterIp, loadBalancer (traefik))
-`5.`. Create an ingress file yaml
+`5.`. Create an ingress file yaml (routing rules, domain, tls)
 
 ```bash
 
@@ -297,4 +300,38 @@ labels:
 
 `4.` Pod receives the request on `containerPort` (internally. spec.containers[].ports.containerPort)
 
- 
+### 3.7 Ingress
+
+> Ingress is an API object that manages external access to the services in a cluster, typically HTTP.
+
+```bash
+kubectl apply -f <ingress_name>.yml
+kubectl get ingress -n <namespace_name>
+sudo nano /etc/hosts # add the domain name and IP address of the minikube. e.g 192.168.1.10 myapp.example.com
+minikube tunnel # start the tunnel to access ingress from outside the cluster
+
+```
+
+`Ingress service example:`
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: <ingress_name>
+    annotations:
+spec:
+    rules:
+        - host: dev-vendor.qpay.mn
+          http:
+              paths:
+                  - path: /v2
+                    pathType: ImplementationSpecific
+                    backend:
+                        service:
+                            name: qpay-vendor-service
+                            port:
+                                name: http
+status:
+    loadBalancer: {}
+```
