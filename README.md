@@ -388,6 +388,7 @@ kubectl --namespace qpay-sms rollout restart deployment qpay-sms-admin-service
 ### 3.8 Securing cluster with RBAC (Role-Based Access Control)
 
 > Link ServiceAccount to Role or ClusterRole via RoleBinding or ClusterRoleBinding (order matters!!!)
+> For RBAC, a ServiceAccount acts like a bridge between resources (e.g Pod) and a Role or ClusterRole.
 
 #### Visualizing RBAC
 
