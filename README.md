@@ -6,73 +6,24 @@ Use Cases of containerization
 -   Container orchestration
 -   Automation of pipelines
 
-# 2. Container orchestration with Kubernetes (K8s)
+# 2. Kubernetes Architecture
 
--   Pods - smallest, deployable unit
+> Kubernetes uses the CRI (Container Runtime Interface) to interact with different container runtimes, such as Docker, containerd, and CRI-O. This allows Kubernetes to manage containers in a consistent way, regardless of the underlying runtime.
+
+> Kubernetes interacts with Docker to schedule and maintain containers.
+
+`From Larger to Smaller:`
+
+-   Clusters and Control Planes (AKA brain of a Kubernetes cluster, manages nodes and pods.)
 -   Nodes - smallest hardware unit. Nodes have pods. Is a group of one or more pods.
--   Control Plane - AKA brain of a Kubernetes cluster, manages nodes and pods.
+-   Pods (containers - smallest, deployable unit)
+-   Worker Node Components (Containers, kubelet, kube-proxy etc)
 
-Docker Instructions
-
-```yaml
-FROM <name_of_image>
-FROM pyhton:3.10
-
-# COPY - copies files or directories from source to destination.
-COPY <source> <destination>
-# Copy files/folders to the main folder od the container
-COPY . .
-RUN - runs a command within a container
-RUN <command>
-RUN npm install
-
-ENTRYPOINT - defines container’s default behavior
-ENTRYPOINT  [“command”, “argument”]
-ENTRYPOINT  [“python”, “hello_world.py”]
-```
-
-Docker build command
-
-builds docker image from a dockerfile
-dockerfile needs to be located in build’s context
-
-```bash
-docker build <context>
-```
-
-# 3. Kubernetes. Container orchestration with Kubernetes (K8s)
-
-> Each config file has 3 main parts:
-
-1. **metadata** - name, labels, etc
-2. **spec** - specification of the desired state of the object
-3. **status** - automatically filled by k8s, current state of the object
-
-### 3.1 Stateless vs Stateful applications
-
-> Stateless applications do not save client data generated in one session for use in the next session with that client. e.g deployments, services, etc.
-> Stateful applications save client data from one session for use in the next session with that client. e.g databases, etc. Each time a POD is terminated, a new POD is created and needs to pick up the saved state.
-
-### Kubernetes Architecture
-
-Kubernetes interacts with Docker to schedule and maintain containers.
-
--   Pods - smallest, deployable unit
--   Nodes - smallest hardware unit. Nodes have pods. Is a group of one or more pods.
--   Control Plane - AKA brain of a Kubernetes cluster, manages nodes and pods.
-
-Architecture
-From Larger to Smaller:
-
--   Clusters and Control Planes
--   Nodes
--   Pods
-
-Cheat Sheet:
+`Cheat Sheet:`
 
 -   Kubernetes **Cluster**: set of connected computers (Nodes) configured to run K8s
 -   Kubernetes **Control Plane** : manages the Nodes in a Cluster
--   Kubernetes **Nodes**: AKA “worker machines”, running Linux and container engine
+-   Kubernetes **Nodes (Worker Nodes)**: AKA “worker machines”, running Linux and container engine
 -   Kubernetes **Pods**: set of one or more containers, smallest deployable unit
 -   Kubernetes **Services**: a resource for exposing network connectivity, required to connect to Pods from outside, and for communication between Pods
 
@@ -90,6 +41,17 @@ kubectl get ingress -n <namespace_name> # get ingress in a specific namespace
 kubectl get all -n <namespace_name> # get all objects in a specific namespace
 kubectl describe <object>: detailed information about an object
 ```
+
+> Each config file has 3 main parts:
+
+1. **metadata** - name, labels, etc
+2. **spec** - specification of the desired state of the object
+3. **status** - automatically filled by k8s, current state of the object
+
+### 3.1 Stateless vs Stateful applications
+
+> Stateless applications do not save client data generated in one session for use in the next session with that client. e.g deployments, services, etc.
+> Stateful applications save client data from one session for use in the next session with that client. e.g databases, etc. Each time a POD is terminated, a new POD is created and needs to pick up the saved state.
 
 ### 3.2 Scaling
 
@@ -335,7 +297,8 @@ spec:
 status:
     loadBalancer: {}
 ```
-### 3.7 Deploying images in K8s from private Docker repository
+
+### 3.8 Deploying images in K8s from private Docker repository
 
 > (Namespace > Secret > ConfigMap > Deployment > Service > Ingress)
 > A Docker repository is where container images are stored, like Docker Hub (public or private)
