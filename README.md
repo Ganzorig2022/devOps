@@ -278,6 +278,10 @@ labels:
 
 > pod --> spec.containers[].ports.containerPort === service --> spec.ports.targetPort === node --> spec.ports.nodePort
 
+```scss
+NodePort (30080) → ClusterIP (80) → PodIP:8080 → ContainerPort 8080
+```
+
 ### 3.7 Ingress
 
 > Ingress is an API object that manages external access to the services in a cluster, typically HTTP.
