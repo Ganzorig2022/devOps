@@ -14,10 +14,11 @@ Use Cases of containerization
 
 `From Larger to Smaller:`
 
--   Clusters and Control Planes (AKA brain of a Kubernetes cluster, manages nodes and pods.)
--   Nodes - smallest hardware unit. Nodes have pods. Is a group of one or more pods.
--   Pods (containers - smallest, deployable unit)
--   Worker Node Components (Containers, kubelet, kube-proxy etc)
+-   Clusters - set of connected computers (Nodes) configured to run k8s.
+-   Nodes - smallest hardware unit. Nodes have pods, it runs the containers. Is a group of one or more pods.
+    -   Master Node (Control Plance) - manages the Kubernetes cluster, responsible for maintaining the desired state of the cluster, scheduling pods, and managing the overall health of the cluster.
+    -   Worker Node - runs the application workloads (pods and containers).
+-   Pods - (containers - smallest, deployable unit)
 
 `Cheat Sheet:`
 
@@ -252,9 +253,12 @@ labels:
 > Service port is different from Pod port
 > targetPort must match containerPort where the pod is listening and the service is forwarding the traffic to
 
-`Here is the scenario:`
+`NETWORKING FLOW:`
 
-`1.` Client sends request to `NodeIP:NodePort` (externally, e.g from web browser, etc) - NodePort, typically 30000–32767
+`1.` Client sends request to `NodeIP:NodePort` (externally, e.g from web browser, etc).
+
+    -   `NodePort` is in the range of 30000–32767.
+    -   `kube-proxy` intercepts the request and routes it to the appropriate `ClusterIP:ServicePort`
 
 `2.` Node forwards the request to `ClusterIP:ServicePort` (internally. spec.ports.port)
 
