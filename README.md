@@ -262,9 +262,21 @@ labels:
 
 `2.` Node forwards the request to `ClusterIP:ServicePort` (internally. spec.ports.port)
 
+    ```yaml
+    spec:
+        ports:
+            - port: 80 # ClusterIP:ServicePort
+            targetPort: 8080 # Pod’s containerPort
+            nodePort: 30080 # NodePort
+    ```
+
 `3.` Service forwards the request to `PodIP:targetPort` (internally. spec.ports.targetPort)
 
+    - The Service acts as a **load balancer** and forwards the request to one of the Pods that match the selector.
+
 `4.` Pod receives the request on `containerPort` (internally. spec.containers[].ports.containerPort)
+
+> pod --> spec.containers[].ports.containerPort === service --> spec.ports.targetPort === node --> spec.ports.nodePort
 
 ### 3.7 Ingress
 
