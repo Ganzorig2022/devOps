@@ -71,7 +71,7 @@ kubectl scale deployment nginx-deployment --replicas 3 # scale DOWN to 3 replica
 > PVs are mapped to Pods using Persistent Volume Claims (PVCs).
 > A mapped PV allows data persistence when the Pod is stopped or deleted.
 
-#### 3 only objects are needed to make storage work:
+#### 3.3.1 only objects are needed to make storage work:
 
 -   Storage Class (SC) - First: defines different types of storage (e.g SSD, HDD etc)
 -   Persistent Volume Claim (PVC) - Second: creates a claim to a specific storage class
@@ -198,7 +198,7 @@ kubectl describe service <service_name> # check the endpoints of the service (sh
 `2.` kube-system - for objects created by the system
 `3`. kube-public - for objects that should be visible and readable by all users (including those not authenticated). This namespace is mostly reserved for cluster usage, in case that some resources should be visible and readable publicly throughout the whole cluster.
 
-##### Access service in another namespace?
+#### 3.5.1 Access service in another namespace?
 
 -   <service_name>.<namespace> (e.g customer-service.card-system)
 
@@ -252,35 +252,6 @@ labels:
 
 > Service port is different from Pod port
 > targetPort must match containerPort where the pod is listening and the service is forwarding the traffic to
-
-`NETWORKING FLOW:`
-
-`1.` Client sends request to `NodeIP:NodePort` (externally, e.g from web browser, etc).
-
-    -   `NodePort` is in the range of 30000–32767.
-    -   `kube-proxy` intercepts the request and routes it to the appropriate `ClusterIP:ServicePort`
-
-`2.` Node forwards the request to `ClusterIP:ServicePort` (internally. spec.ports.port)
-
-    ```yaml
-    spec:
-        ports:
-            - port: 80 # ClusterIP:ServicePort
-            targetPort: 8080 # Pod’s containerPort
-            nodePort: 30080 # NodePort
-    ```
-
-`3.` Service forwards the request to `PodIP:targetPort` (internally. spec.ports.targetPort)
-
-    - The Service acts as a **load balancer** and forwards the request to one of the Pods that match the selector.
-
-`4.` Pod receives the request on `containerPort` (internally. spec.containers[].ports.containerPort)
-
-> pod --> spec.containers[].ports.containerPort === service --> spec.ports.targetPort === node --> spec.ports.nodePort
-
-```scss
-NodePort (30080) → ClusterIP (80) → PodIP:8080 → ContainerPort 8080
-```
 
 ### 3.7 Ingress
 
@@ -448,3 +419,34 @@ rules:
 
 > With ClusterRole, you can define cluster-wide permissions. (entire cluster, typically for admins)
 > Not bound to a specific namespace.
+
+### How Things Work Together?
+
+`NETWORKING FLOW:`
+
+`1.` Client sends request to `NodeIP:NodePort` (externally, e.g from web browser, etc).
+
+    -   `NodePort` is in the range of 30000–32767.
+    -   `kube-proxy` intercepts the request and routes it to the appropriate `ClusterIP:ServicePort`
+
+`2.` Node forwards the request to `ClusterIP:ServicePort` (internally. spec.ports.port)
+
+    ```yaml
+    spec:
+        ports:
+            - port: 80 # ClusterIP:ServicePort
+            targetPort: 8080 # Pod’s containerPort
+            nodePort: 30080 # NodePort
+    ```
+
+`3.` Service forwards the request to `PodIP:targetPort` (internally. spec.ports.targetPort)
+
+    - The Service acts as a load balancer and forwards the request to one of the Pods that match the selector.
+
+`4.` Pod receives the request on `containerPort` (internally. spec.containers[].ports.containerPort)
+
+> pod --> spec.containers[].ports.containerPort === service --> spec.ports.targetPort === node --> spec.ports.nodePort
+
+```scss
+NodePort (30080) → ClusterIP (80) → PodIP:8080 → ContainerPort 8080
+```
