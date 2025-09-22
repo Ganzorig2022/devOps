@@ -16,7 +16,7 @@ Use Cases of containerization
 
 -   Clusters - set of connected computers (Nodes) configured to run k8s.
 -   Nodes - smallest hardware unit. Nodes have pods, it runs the containers. Is a group of one or more pods.
-    -   Master Node (Control Plance) - manages the Kubernetes cluster, responsible for maintaining the desired state of the cluster, scheduling pods, and managing the overall health of the cluster.
+    -   Master Node (Control Plane) - manages the Kubernetes cluster, responsible for maintaining the desired state of the cluster, scheduling pods, and managing the overall health of the cluster.
     -   Worker Node - runs the application workloads (pods and containers).
 -   Pods - (containers - smallest, deployable unit)
 
