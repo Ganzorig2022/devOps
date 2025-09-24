@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qpay-sms-merchant-service # up to you
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: qpay-sms-merchant-service # up to you
+    spec:
+      containers: 
+        - name: qpay-sms-merchant-service # up to you
+          image: ganzo2023/first-app:dev
+  selector:
+    matchLabels:
+      app: qpay-sms-merchant-service

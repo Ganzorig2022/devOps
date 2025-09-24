@@ -11,6 +11,7 @@ Use Cases of containerization
 > Kubernetes uses the CRI (Container Runtime Interface) to interact with different container runtimes, such as Docker, containerd, and CRI-O. This allows Kubernetes to manage containers in a consistent way, regardless of the underlying runtime.
 
 > Kubernetes interacts with Docker to schedule and maintain containers.
+> K8s works with objects, not containers directly.
 
 `From Larger to Smaller:`
 
@@ -206,7 +207,7 @@ kubectl describe service <service_name> # check the endpoints of the service (sh
 kubectl get namespaces # list all namespaces
 kubectl apply -f <file_name>.yml --namespace <namespace_name> # create objects in a specific namespace
 kubectl get pods --namespace <namespace_name> # list all pods in a specific namespace
-kubectl create namespace <namespace_name> # or create a new namespance
+kubectl create namespace <namespace_name> # or create a new namespace
 kubectl config set-contect --current --namespace=<namespace_name> # change the active namespace
 kubectl get all --namespace <namespace_name> # get all objects in a specific namespace
 ```
