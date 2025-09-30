@@ -427,17 +427,20 @@ rules:
 
 `1.` Client sends request to `NodeIP:NodePort` (externally, e.g from web browser, etc).
 
+    -   `NodeIP` is in the k8s dashboard, Cluster > Nodes > Internal IP. e.g 192.168.150.22
     -   `NodePort` is in the range of 30000–32767.
     -   `kube-proxy` intercepts the request and routes it to the appropriate `ClusterIP:ServicePort`
 
 `2.` Node forwards the request to `ClusterIP:ServicePort` (internally. spec.ports.port)
+
+    -   `ClusterIP:ServicePort` is in the k8s dashboard, Services > ClusterIP (Type: NodePort).nmg
 
     ```yaml
     spec:
         ports:
             - port: 80 # ClusterIP:ServicePort
             targetPort: 8080 # Pod’s containerPort
-            nodePort: 30080 # NodePort
+            nodePort: 30931 # NodePort
     ```
 
 `3.` Service forwards the request to `PodIP:targetPort` (internally. spec.ports.targetPort)
